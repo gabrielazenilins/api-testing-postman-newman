@@ -1,0 +1,1408 @@
+{
+  "info": {
+    "name": "Swagger Petstore - Semana 1 (dias 21 a 23)",
+    "description": "Collection de testes da API Petstore (https://petstore.swagger.io/v2), baseada na Atividade 17.\n\n- **Dia 21**: GET, POST, PUT e DELETE para pet, store e user, organizados em pastas.\n- **Dia 22**: todos os dados vêm do ambiente \"Petstore\" (baseUrl, petId, orderId, username etc.). Autenticação por **API Key** (header `api_key`) definida na collection, e **Bearer** nas requests de usuário que rodam depois do login (o token é salvo automaticamente em `sessionToken`).\n- **Dia 23**: todas as requests têm testes (status code, contrato e valores). A ordem das requests segue o fluxo criar → consultar → alterar → apagar, para rodar de ponta a ponta no Collection Runner ou no Newman:\n\n```\nnewman run petstore-semana1.postman_collection.json -e petstore.postman_environment.json\n```\n\nObs.: a Petstore é uma API pública de demonstração, então ela aceita qualquer API Key e token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "api_key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "pet",
+      "item": [
+        {
+          "name": "Add a new pet to the store",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Testar o status code",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "//Realizar testes de contrato dos campos",
+                  "pm.test(\"Verificar se o campo 'id' existe \", function () {",
+                  "    pm.expect(pm.response.json().id).to.not.be.undefined;",
+                  "});",
+                  "//Verificar se o campo 'id' é um numero",
+                  "pm.test(\"Verificar se o campo 'id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().id).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'id' contem um numero entre 1 e 999999999",
+                  "pm.test(\"Verificar se o campo 'id' contém um número entre 1 e 999999999\", function () {",
+                  "    pm.expect(pm.response.json().id).to.be.within(1, 999999999);",
+                  "});",
+                  "",
+                  "// Verificar se o campo 'name' existe",
+                  "pm.test(\"Verificar se o campo 'name' existe\", function () {",
+                  "    pm.expect(pm.response.json().name).to.not.be.null;",
+                  "});",
+                  "//Verificar se o campo 'name' é uma String",
+                  "pm.test(\"Verificar se o campo 'name' é uma String\", function () {",
+                  "    pm.expect(pm.response.json().name).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'name' tem entre 1 a 45 caracteres",
+                  "pm.test(\"Verificar se o campo 'name' tem entre 1 a 45 caracteres\", function () {",
+                  "    pm.expect(pm.response.json().name).to.have.lengthOf.at.least(1);",
+                  "    pm.expect(pm.response.json().name).to.have.lengthOf.at.below(45);",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'category.id' é um numero",
+                  "pm.test(\"Verificar se o campo 'category.id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().category.id).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'tags.id' é um numero",
+                  "pm.test(\"Verificar se o campo 'tags.id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].id).to.be.a('number');",
+                  "    pm.expect(pm.response.json().tags[1].id).to.be.a('number');",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "//Verificar se o campo 'id' é igual ao petId do ambiente",
+                  "pm.test(\"Verificar se o campo 'id' é igual ao petId do ambiente\", function () {",
+                  "    pm.expect(pm.response.json().id).to.eql(Number(pm.environment.get(\"petId\")));",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'tags [0].id' é igual a 1",
+                  "pm.test(\"Verificar se o campo 'tags [0].id' é igual a 1\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].id).to.equal(1);",
+                  "});",
+                  "",
+                  "//Verifique se o campo 'tags[0].name' é igual a 'vacinado'",
+                  "pm.test(\"Verificar se o campo 'tags [0].name' é igual a 'vacinado'\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].name).to.equal('vacinado');",
+                  "});",
+                  "",
+                  "//Verifique se o campo 'status' é igual a 'available'",
+                  "pm.test(\"Verificar se o campo 'status' é igual a 'available'\", function () {",
+                  "    pm.expect(pm.response.json().status).to.equal('available');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{petId}},\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"gato\"\n  },\n  \"name\": \"{{petName}}\",\n  \"photoUrls\": [\n    \"https://exemplo.com/bichento.jpg\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"vacinado\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"castrado\"\n    }\n  ],\n  \"status\": \"available\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add a new pet to the store with error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Testar o status code",
+                  "pm.test(\"Status code is 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "// Testar se o campo 'message' é igual a 'Bad input'",
+                  "pm.test(\"Message is 'bad input'\", function () {",
+                  "    pm.expect(pm.response.json().message).to.eql('bad input');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{petId}},\n  \"name\": \"{{petName}}\",",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Teste negativo: o corpo é um JSON propositalmente incompleto (falta fechar a chave), e a API deve responder 400 'bad input'."
+          },
+          "response": []
+        },
+        {
+          "name": "Find pet by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Testar o status code",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "//Realizar testes de contrato dos campos",
+                  "pm.test(\"Verificar se o campo 'id' existe \", function () {",
+                  "    pm.expect(pm.response.json().id).to.not.be.undefined;",
+                  "});",
+                  "//Verificar se o campo 'id' é um numero",
+                  "pm.test(\"Verificar se o campo 'id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().id).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'id' contem um numero entre 1 e 999999999",
+                  "pm.test(\"Verificar se o campo 'id' contém um número entre 1 e 999999999\", function () {",
+                  "    pm.expect(pm.response.json().id).to.be.within(1, 999999999);",
+                  "});",
+                  "",
+                  "// Verificar se o campo 'name' existe",
+                  "pm.test(\"Verificar se o campo 'name' existe\", function () {",
+                  "    pm.expect(pm.response.json().name).to.not.be.null;",
+                  "});",
+                  "//Verificar se o campo 'name' é uma String",
+                  "pm.test(\"Verificar se o campo 'name' é uma String\", function () {",
+                  "    pm.expect(pm.response.json().name).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'name' tem entre 1 a 45 caracteres",
+                  "pm.test(\"Verificar se o campo 'name' tem entre 1 a 45 caracteres\", function () {",
+                  "    pm.expect(pm.response.json().name).to.have.lengthOf.at.least(1);",
+                  "    pm.expect(pm.response.json().name).to.have.lengthOf.at.below(45);",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'category.id' é um numero",
+                  "pm.test(\"Verificar se o campo 'category.id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().category.id).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'tags.id' é um numero",
+                  "pm.test(\"Verificar se o campo 'tags.id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].id).to.be.a('number');",
+                  "    pm.expect(pm.response.json().tags[1].id).to.be.a('number');",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "//Verificar se o campo 'id' é igual ao petId do ambiente",
+                  "pm.test(\"Verificar se o campo 'id' é igual ao petId do ambiente\", function () {",
+                  "    pm.expect(pm.response.json().id).to.eql(Number(pm.environment.get(\"petId\")));",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'tags [0].id' é igual a 1",
+                  "pm.test(\"Verificar se o campo 'tags [0].id' é igual a 1\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].id).to.equal(1);",
+                  "});",
+                  "",
+                  "//Verifique se o campo 'tags[0].name' é igual a 'vacinado'",
+                  "pm.test(\"Verificar se o campo 'tags [0].name' é igual a 'vacinado'\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].name).to.equal('vacinado');",
+                  "});",
+                  "",
+                  "//Verifique se o campo 'status' é igual a 'available'",
+                  "pm.test(\"Verificar se o campo 'status' é igual a 'available'\", function () {",
+                  "    pm.expect(pm.response.json().status).to.equal('available');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/:petId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet",
+                ":petId"
+              ],
+              "variable": [
+                {
+                  "key": "petId",
+                  "value": "{{petId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Finds Pets by status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta é uma lista\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Todos os pets retornados têm o status pesquisado\", function () {",
+                  "    pm.response.json().forEach(p => pm.expect(p.status).to.eql('available'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByStatus?status=available",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet",
+                "findByStatus"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "available"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Finds Pets by tags",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Resposta é uma lista\", function () {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});",
+                  "",
+                  "pm.test(\"Todos os pets retornados têm a tag pesquisada\", function () {",
+                  "    pm.response.json().forEach(p => {",
+                  "        const nomes = (p.tags || []).map(t => t.name);",
+                  "        pm.expect(nomes).to.include('vacinado');",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/findByTags?tags=vacinado",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet",
+                "findByTags"
+              ],
+              "query": [
+                {
+                  "key": "tags",
+                  "value": "vacinado"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update an existing pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Testar o status code",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "//Realizar testes de contrato dos campos",
+                  "pm.test(\"Verificar se o campo 'id' existe \", function () {",
+                  "    pm.expect(pm.response.json().id).to.not.be.undefined;",
+                  "});",
+                  "//Verificar se o campo 'id' é um numero",
+                  "pm.test(\"Verificar se o campo 'id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().id).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'id' contem um numero entre 1 e 999999999",
+                  "pm.test(\"Verificar se o campo 'id' contém um número entre 1 e 999999999\", function () {",
+                  "    pm.expect(pm.response.json().id).to.be.within(1, 999999999);",
+                  "});",
+                  "",
+                  "// Verificar se o campo 'name' existe",
+                  "pm.test(\"Verificar se o campo 'name' existe\", function () {",
+                  "    pm.expect(pm.response.json().name).to.not.be.null;",
+                  "});",
+                  "//Verificar se o campo 'name' é uma String",
+                  "pm.test(\"Verificar se o campo 'name' é uma String\", function () {",
+                  "    pm.expect(pm.response.json().name).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'name' tem entre 1 a 45 caracteres",
+                  "pm.test(\"Verificar se o campo 'name' tem entre 1 a 45 caracteres\", function () {",
+                  "    pm.expect(pm.response.json().name).to.have.lengthOf.at.least(1);",
+                  "    pm.expect(pm.response.json().name).to.have.lengthOf.at.below(45);",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'category.id' é um numero",
+                  "pm.test(\"Verificar se o campo 'category.id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().category.id).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'tags.id' é um numero",
+                  "pm.test(\"Verificar se o campo 'tags.id' é um número\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].id).to.be.a('number');",
+                  "    pm.expect(pm.response.json().tags[1].id).to.be.a('number');",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "//Verificar se o campo 'id' é igual ao petId do ambiente",
+                  "pm.test(\"Verificar se o campo 'id' é igual ao petId do ambiente\", function () {",
+                  "    pm.expect(pm.response.json().id).to.eql(Number(pm.environment.get(\"petId\")));",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'tags [0].id' é igual a 1",
+                  "pm.test(\"Verificar se o campo 'tags [0].id' é igual a 1\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].id).to.equal(1);",
+                  "});",
+                  "",
+                  "//Verifique se o campo 'tags[0].name' é igual a 'vacinado'",
+                  "pm.test(\"Verificar se o campo 'tags [0].name' é igual a 'vacinado'\", function () {",
+                  "    pm.expect(pm.response.json().tags[0].name).to.equal('vacinado');",
+                  "});",
+                  "",
+                  "//Verifique se o campo 'status' é igual a 'sold'",
+                  "pm.test(\"Verificar se o campo 'status' é igual a 'sold'\", function () {",
+                  "    pm.expect(pm.response.json().status).to.equal('sold');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{petId}},\n  \"category\": {\n    \"id\": 1,\n    \"name\": \"gato\"\n  },\n  \"name\": \"{{petName}}\",\n  \"photoUrls\": [\n    \"https://exemplo.com/bichento.jpg\"\n  ],\n  \"tags\": [\n    {\n      \"id\": 1,\n      \"name\": \"vacinado\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"castrado\"\n    }\n  ],\n  \"status\": \"sold\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Updates a pet in the store with form data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Campo 'message' é o petId atualizado\", function () {",
+                  "    pm.expect(pm.response.json().message).to.eql(pm.environment.get(\"petId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pet/:petId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet",
+                ":petId"
+              ],
+              "variable": [
+                {
+                  "key": "petId",
+                  "value": "{{petId}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "name",
+                  "value": "{{petName}}",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "sold",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deletes a pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Verificar se o status code igual a 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "// Verificar se o campo 'code' no response.json igual a 200",
+                  "pm.test(\"Response code is 200\", function () {",
+                  "    pm.expect(pm.response.json().code).to.eql(200);",
+                  "});",
+                  "//Verificar se o campo 'type' é igual a 'unknown'",
+                  "pm.test(\"Response type is 'unknown'\", function () {",
+                  "    pm.expect(pm.response.json().type).to.eql('unknown');",
+                  "});",
+                  "//Verificar se o campo 'message' é igual ao petId do ambiente",
+                  "pm.test(\"Response message is the deleted petId\", function () {",
+                  "    pm.expect(pm.response.json().message).to.eql(pm.environment.get(\"petId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pet/:petId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pet",
+                ":petId"
+              ],
+              "variable": [
+                {
+                  "key": "petId",
+                  "value": "{{petId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "store",
+      "item": [
+        {
+          "name": "Returns pet inventories by status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Inventário é um objeto com quantidades numéricas\", function () {",
+                  "    const inv = pm.response.json();",
+                  "    pm.expect(inv).to.be.an('object');",
+                  "    Object.values(inv).forEach(q => pm.expect(q).to.be.a('number'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/store/inventory",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "store",
+                "inventory"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Place an order for a pet",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Pedido criado com os dados enviados\", function () {",
+                  "    const pedido = pm.response.json();",
+                  "    pm.expect(pedido.id).to.eql(Number(pm.environment.get(\"orderId\")));",
+                  "    pm.expect(pedido.petId).to.eql(Number(pm.environment.get(\"petId\")));",
+                  "    pm.expect(pedido.status).to.eql('placed');",
+                  "    pm.expect(pedido.complete).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/store/order",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "store",
+                "order"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{orderId}},\n  \"petId\": {{petId}},\n  \"quantity\": 1,\n  \"shipDate\": \"2026-09-23T12:00:00.000Z\",\n  \"status\": \"placed\",\n  \"complete\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find purchase order by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Pedido encontrado é o criado e está completo\", function () {",
+                  "    const pedido = pm.response.json();",
+                  "    pm.expect(pedido.id).to.eql(Number(pm.environment.get(\"orderId\")));",
+                  "    pm.expect(pedido.complete).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/store/order/:orderId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "store",
+                "order",
+                ":orderId"
+              ],
+              "variable": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete purchase order by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Campo 'message' é o orderId removido\", function () {",
+                  "    pm.expect(pm.response.json().message).to.eql(pm.environment.get(\"orderId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/store/order/:orderId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "store",
+                "order",
+                ":orderId"
+              ],
+              "variable": [
+                {
+                  "key": "orderId",
+                  "value": "{{orderId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "item": [
+        {
+          "name": "Create user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Verificar se o status code é 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Testes de contrato",
+                  "",
+                  "// Verifique se o campo 'code' é um numero",
+                  "pm.test(\"code is a number\", function () {",
+                  "    pm.expect(pm.response.json().code).to.be.a(\"number\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'type' é uma string",
+                  "pm.test(\"type is a string\", function () {",
+                  "    pm.expect(pm.response.json().type).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'message' é uma string",
+                  "pm.test(\"message is a string\", function () {",
+                  "    pm.expect(pm.response.json().message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "// Verifique se o campo 'code' é igual a 200",
+                  "pm.test(\"code is 200\", function () {",
+                  "    pm.expect(pm.response.json().code).to.equal(200);",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'type' é igual a 'unknown'",
+                  "pm.test(\"type is unknown\", function () {",
+                  "    pm.expect(pm.response.json().type).to.equal(\"unknown\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'message' é igual ao userId do ambiente (id enviado no body)",
+                  "pm.test(\"message is equal to id\", function () {",
+                  "    pm.expect(pm.response.json().message).to.equal(pm.environment.get(\"userId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{userId}},\n  \"username\": \"{{username}}\",\n  \"firstName\": \"Usuario\",\n  \"lastName\": \"Teste\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"phone\": \"45999999999\",\n  \"userStatus\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create user with error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Verificar se o status code é 500",
+                  "pm.test(\"Status code is 500\", function () {",
+                  "    pm.response.to.have.status(500);",
+                  "});",
+                  "",
+                  "// Testes de contrato",
+                  "",
+                  "// Verifique se o campo 'code' é um numero",
+                  "pm.test(\"code is a number\", function () {",
+                  "    pm.expect(pm.response.json().code).to.be.a(\"number\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'type' é uma string",
+                  "pm.test(\"type is a string\", function () {",
+                  "    pm.expect(pm.response.json().type).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'message' é uma string",
+                  "pm.test(\"message is a string\", function () {",
+                  "    pm.expect(pm.response.json().message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "// Verifique se o campo 'code' é igual a 500",
+                  "pm.test(\"code is 500\", function () {",
+                  "    pm.expect(pm.response.json().code).to.equal(500);",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'type' é igual a 'unknown'",
+                  "pm.test(\"type is unknown\", function () {",
+                  "    pm.expect(pm.response.json().type).to.equal(\"unknown\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'message' é igual a 'something bad happened'",
+                  "pm.test(\"message is correct\", function () {",
+                  "    pm.expect(pm.response.json().message).to.equal(\"something bad happened\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"abc\",\n  \"username\": \"{{username}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Teste negativo: o campo id vai como texto (\"abc\") em vez de número, e a API responde 500."
+          },
+          "response": []
+        },
+        {
+          "name": "Get user by user name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//Verificar se o status code é igual a 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "//Testes de contrato",
+                  "",
+                  "// Verificar se o campo 'id' existe",
+                  "pm.test(\"O campo 'id' deve existir\", function () {",
+                  "    pm.expect(pm.response.json().id).to.not.be.undefined;",
+                  "});",
+                  "//Verificar se o campo 'firstName' é uma string",
+                  "pm.test(\"O campo 'firstName' deve ser uma string\", function () {",
+                  "    pm.expect(pm.response.json().firstName).to.be.a('string');",
+                  "});",
+                  "//Verificar se o campo 'lastName' é uma string",
+                  "pm.test(\"O campo 'lastName' deve ser uma string\", function () {",
+                  "    pm.expect(pm.response.json().lastName).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Testes funcionais",
+                  "",
+                  "//Verificar se o campo 'username' é igual ao username do ambiente",
+                  "pm.test(\"O campo 'username' deve ser igual ao username informado na URL\", function () {",
+                  "    pm.expect(pm.response.json().username).to.equal(pm.environment.get(\"username\"));",
+                  "});",
+                  "// Verificar se o campo 'email' é uma string que contém um e-mail válido",
+                  "pm.test(\"O campo 'email' deve ser uma string que contém '@' e um domínio\", function () {",
+                  "    pm.expect(pm.response.json().email).to.be.a(\"string\");",
+                  "    pm.expect(pm.response.json().email).to.match(/^[^@]+@[^@]+\\.[^@]+$/);",
+                  "});",
+                  "",
+                  "// Verificar se o campo 'userStatus' é um inteiro (int32)",
+                  "pm.test(\"O campo 'userStatus' deve ser um inteiro\", function () {",
+                  "    pm.expect(pm.response.json().userStatus).to.be.a(\"number\");",
+                  "    pm.expect(Number.isInteger(pm.response.json().userStatus)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:username",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":username"
+              ],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "{{username}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logs user into the system",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//Verificar se o status code é 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "//Testes de contrato",
+                  "",
+                  "//Verificar se o 'code' é um número",
+                  "pm.test(\"code is a number\", function () {",
+                  "    pm.expect(pm.response.json().code).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'type' é uma string",
+                  "pm.test(\"type is a string\", function () {",
+                  "    pm.expect(pm.response.json().type).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'message' é uma string",
+                  "pm.test(\"message is a string\", function () {",
+                  "    pm.expect(pm.response.json().message).to.be.a('string');",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "//Verificar se o campo 'code' é igual a 200",
+                  "pm.test(\"code is 200\", function () {",
+                  "    pm.expect(pm.response.json().code).to.equal(200);",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'type' é 'unkown'",
+                  "pm.test(\"type is 'unknown'\", function () {",
+                  "    pm.expect(pm.response.json().type).to.equal('unknown');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'message' contem o seguinte texto 'logged in user session'",
+                  "pm.test(\"message contains 'logged in user session'\", function () {",
+                  "    pm.expect(pm.response.json().message).to.include('logged in user session');",
+                  "});",
+                  "",
+                  "// Guardar o token da sessão no ambiente, para usar como Bearer nas próximas requests",
+                  "const token = pm.response.json().message.split(':')[1];",
+                  "pm.environment.set(\"sessionToken\", token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/login?username={{username}}&password={{password}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "{{username}}"
+                },
+                {
+                  "key": "password",
+                  "value": "{{password}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Updated user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Verificar se o status code é igual a 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Testes de contrato",
+                  "",
+                  "// Verifique se o campo 'code' é um numero",
+                  "pm.test(\"code is a number\", function () {",
+                  "    pm.expect(pm.response.json().code).to.be.a(\"number\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'type' é uma string",
+                  "pm.test(\"type is a string\", function () {",
+                  "    pm.expect(pm.response.json().type).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'message' é uma string",
+                  "pm.test(\"message is a string\", function () {",
+                  "    pm.expect(pm.response.json().message).to.be.a(\"string\");",
+                  "});",
+                  "",
+                  "// Testes funcionais",
+                  "",
+                  "// Verifique se o campo 'code' é igual a 200",
+                  "pm.test(\"code is 200\", function () {",
+                  "    pm.expect(pm.response.json().code).to.equal(200);",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'type' é igual a 'unknown'",
+                  "pm.test(\"type is unknown\", function () {",
+                  "    pm.expect(pm.response.json().type).to.equal(\"unknown\");",
+                  "});",
+                  "",
+                  "// Verifique se o campo 'message' é igual ao userId do ambiente (id enviado no body)",
+                  "pm.test(\"message is equal to id\", function () {",
+                  "    pm.expect(pm.response.json().message).to.equal(pm.environment.get(\"userId\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:username",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":username"
+              ],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "{{username}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{userId}},\n  \"username\": \"{{username}}\",\n  \"firstName\": \"Usuario Atualizado\",\n  \"lastName\": \"Teste\",\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"phone\": \"45999999999\",\n  \"userStatus\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{sessionToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Usa autenticação Bearer com o token salvo no login (variável `sessionToken`)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//Verificar se o status code é igual a 200",
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "//Testes de contrato",
+                  "//Verificar se o campo 'code' é um numero",
+                  "pm.test(\"Verifica se o campo 'code' é um número\", function () {",
+                  "    pm.expect(pm.response.json().code).to.be.a('number');",
+                  "});",
+                  "//Verificar se o campo 'type' é uma string",
+                  "pm.test(\"Verifica se o campo 'type' é uma string\", function () {",
+                  "    pm.expect(pm.response.json().type).to.be.a('string');",
+                  "});",
+                  "//Verificar se o campo 'message' é uma string",
+                  "pm.test(\"Verifica se o campo 'message' é uma string\", function () {",
+                  "    pm.expect(pm.response.json().message).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Testes funcionais",
+                  "",
+                  "//Verifica se o campo 'code' é igual a 200",
+                  "pm.test(\"Verifica se o campo 'code' é igual a 200\", function () {",
+                  "    pm.expect(pm.response.json().code).to.equal(200);",
+                  "});",
+                  "//Verificar se o campo 'type' é igual a 'unknown'",
+                  "pm.test(\"Verifica se o campo 'type' é igual a 'unknown'\", function () {",
+                  "    pm.expect(pm.response.json().type).to.equal('unknown');",
+                  "});",
+                  "//Verifica se o campo 'message' retorna o username removido",
+                  "pm.test(\"Verifica se o campo 'message' é igual ao username informado nos Path Variables\", function () {",
+                  "    pm.expect(pm.response.json().message).to.equal(pm.environment.get(\"username\"));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/:username",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":username"
+              ],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "{{username}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{sessionToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Usa autenticação Bearer com o token salvo no login (variável `sessionToken`)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get user by user name with error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "//Verificar se o status code é igual a 404",
+                  "pm.test(\"Status code is 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "//Testes de contrato",
+                  "",
+                  "//Verificar se o campo 'code' é um numero",
+                  "pm.test(\"Verificar se o campo 'code' é um numero\", function () {",
+                  "    pm.expect(pm.response.json().code).to.be.a('number');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'type' é uma string",
+                  "pm.test(\"Verificar se o campo 'type' é uma string\", function () {",
+                  "    pm.expect(pm.response.json().type).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'message' é uma string",
+                  "pm.test(\"Verificar se o campo 'message' é uma string\", function () {",
+                  "    pm.expect(pm.response.json().message).to.be.a('string');",
+                  "});",
+                  "",
+                  "//Testes funcionais",
+                  "",
+                  "//Verificar se o campo 'code' é igual a 1",
+                  "pm.test(\"Verificar se o campo 'code' é igual a 1\", function () {",
+                  "    pm.expect(pm.response.json().code).to.eql(1);",
+                  "});",
+                  "",
+                  "//Verificar se o campo 'type' contem a mensagem 'error'",
+                  "pm.test(\"Verificar se o campo 'type' contém a mensagem 'error'\", function () {",
+                  "    pm.expect(pm.response.json().type).to.include('error');",
+                  "});",
+                  "",
+                  "//Verificar se a 'message' é 'User not found'",
+                  "pm.test(\"Verificar se a 'message' é 'User not found'\", function () {",
+                  "    pm.expect(pm.response.json().message).to.equal('User not found');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:username",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":username"
+              ],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "{{username}}"
+                }
+              ]
+            },
+            "description": "Teste negativo: roda depois do Delete user, então o usuário não existe mais e a API deve responder 404."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
