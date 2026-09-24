@@ -117,8 +117,8 @@ Link do
 
 
 
-
-
+[Link do Postman](https://www.postman.com/gabrielazeni-1621293/api-testing-postman-newman/collection/hclng56/swagger-petstore)
+ 
 ## ⚠️ Observação
 
 A Petstore é uma API pública de demonstração, compartilhada por todos os que a usam. Ela aceita qualquer API Key ou token, e outras pessoas podem alterar os mesmos registros ao mesmo tempo. Se algum teste falhar de forma isolada, rode de novo ou troque `petId` e `userId` no ambiente.
