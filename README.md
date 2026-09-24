@@ -108,11 +108,16 @@ O relatório HTML é gerado na pasta `newman/`.
 1. Clique em **Import** e arraste os dois arquivos `.json`.
 2. Selecione o ambiente **Petstore** no canto superior direito.
 3. Na collection, clique em **Run**.
-
+Link do 
 ## 📊 Resultado
 
-<!-- Substitua pela imagem do seu relatório: arraste o print para uma issue ou para o editor do GitHub e cole o link aqui -->
-![Relatório Newman](relatorio-newman.png)
+
+<img width="1241" height="1755" alt="Reportes HTML Postman_page-0001" src="https://github.com/user-attachments/assets/4c94662f-48e5-48b5-86f0-f01ac99c76ac" />
+<img width="1241" height="1755" alt="Reportes HTML Postman_page-0002" src="https://github.com/user-attachments/assets/5b8ec299-2d71-4d20-b0a9-50a7c55a487f" />
+
+
+
+
 
 ## ⚠️ Observação
 
